@@ -36,8 +36,9 @@ function startInventoryCheck() {
         type: 'input',
         message: "How many would you like to buy?",
     }]).then(function(answer) {
+        // console.log(res[0].product_name); making sure the right info is being called later
         'SELECT item_id, product_name, price, stock_quantity FROM products WHERE ?', {
-            product_name: answer.product_name 
+            product_name: res[0].product_name
         },
         function (err, res) {
             if (err) throw err;
