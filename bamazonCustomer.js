@@ -32,33 +32,29 @@ function startInventoryCheck() {
           },
         message: "Which item would you like to buy?",
     }, {
-        name: 'quantiy',
+        name: 'quantity',
         type: 'input',
         message: "How many would you like to buy?",
     }]).then(function(answer) {
-        // console.log(res[0].product_name); making sure the right info is being called later
-        'SELECT item_id, product_name, price, stock_quantity FROM products WHERE ?', {
-            product_name: res[0].product_name
-        },
-        function (err, res) {
+        connection.query('SELECT * FROM products', function (err, res) {
             if (err) throw err;
-                var quantity = res[0].stock_quantity;
-                var price = res[0].price;
-                var updatedQty = quantity - parseInt(answer.quantity)
+                var quantity = res.stock_quantity;
+                var price = res.price;
+                // var updatedQty = quantity - parseInt(answer.quantity)
                 var orderTotal = (price * parseInt(answer.quantity))
 
             if (quantity < answer.quantity) {
                 console.log('Insufficient quantity! Select a smaller number of products');
                 startInventoryCheck();
+            
             } else {
                 connection.query('UPDATE products SET ? WHERE ?',
                 [{
-                    stock_quantity: updatedQty
+                    stock_quantity: answer.quantity
                 },
                 {
                     product_name: answer.product_name
-                }
-                ],
+                }],
                 function(err) {
                     if (err) {
                         console.log(err);
@@ -67,10 +63,10 @@ function startInventoryCheck() {
                         console.log(`Total cost: ${orderTotal}`);
                         startInventoryCheck();
                     }
-                    })
-                }
+                    }
+                )}
             }
-        })
+        )
     })
+})
 }
-
